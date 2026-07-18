@@ -1,8 +1,10 @@
 "use client"
 
+import { useCallback } from "react"
 import { useGetProductsQuery, useGetLikedIdsQuery, useToggleLikeMutation } from "@/lib/features/products-api-slice"
 import StickerCard from "./sticker-card"
 import { TabsLoading } from "./tabs-loading"
+import toast from "react-hot-toast"
 
 export default function ProductGrid({
   activeCategory,
@@ -20,6 +22,15 @@ export default function ProductGrid({
   const { data: likedIds } = useGetLikedIdsQuery(undefined, { skip: !token })
   const [toggleLike] = useToggleLikeMutation()
 
+  const handleToggleLike = useCallback(async (productId: string) => {
+    try {
+      const result = await toggleLike(productId).unwrap()
+      toast.success(result.liked ? "Added to favorites" : "Removed from favorites")
+    } catch {
+      toast.error("Could not update favorite")
+    }
+  }, [toggleLike])
+
   return (
     <section className="bg-cream">
       <div className="mx-auto flex max-w-360 flex-col gap-8 px-4 pb-16 pt-5 md:px-8 lg:px-16 lg:pb-22.5">
@@ -36,7 +47,7 @@ export default function ProductGrid({
                 key={product.id}
                 product={product}
                 liked={likedIds?.includes(product.id) ?? false}
-                onToggleLike={() => toggleLike(product.id)}
+                onToggleLike={() => handleToggleLike(product.id)}
               />
             ))}
           </div>

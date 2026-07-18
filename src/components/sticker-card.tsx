@@ -85,7 +85,7 @@ export default function StickerCard({
           }}
           className="absolute right-3 top-3 flex h-8 w-8 cursor-pointer items-center 
           justify-center rounded-full bg-white/70 backdrop-blur-sm transition-transform 
-          hover:scale-110 active:scale-90"
+          hover:scale-110 active:scale-90 group"
           aria-label={liked ? "Unlike" : "Like"}
         >
           <Heart
@@ -94,6 +94,11 @@ export default function StickerCard({
             stroke={liked ? "#ef4444" : "#666"}
             strokeWidth={2}
           />
+          <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap 
+          rounded-md bg-foreground px-2 py-0.5 text-[10px] font-semibold text-background 
+          opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none">
+            {liked ? "Remove" : "Like"}
+          </span>
         </button>
       </div>
 

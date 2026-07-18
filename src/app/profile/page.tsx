@@ -160,6 +160,21 @@ export default function ProfilePage() {
   const { data: allProducts } = useGetProductsQuery();
   const [toggleLike] = useToggleLikeMutation();
 
+  const handleToggleLike = useCallback(async (productId: string) => {
+    try {
+      const result = await toggleLike(productId).unwrap()
+      if (!result.liked) {
+        setData((prev) => prev ? {
+          ...prev,
+          likedProductIds: prev.likedProductIds.filter((id) => id !== productId),
+        } : null)
+        toast.success("Removed from favorites")
+      }
+    } catch {
+      toast.error("Could not remove favorite")
+    }
+  }, [toggleLike])
+
   if (loading) {
     return (
       <>
@@ -207,15 +222,6 @@ export default function ProfilePage() {
   const initials = getInitials(user.name);
   const memberSince = formatDate(user.createdAt);
   const likedProducts = allProducts?.filter((p) => likedProductIds.includes(p.id)) ?? [];
-
-  const likedCards = likedProducts.map((product) => (
-    <StickerCard
-      key={product.id}
-      product={product}
-      liked={true}
-      onToggleLike={() => toggleLike(product.id)}
-    />
-  ));
 
   const tabClass = (tab: string) =>
     `font-bold text-[14.5px] px-1 pb-3 mr-7 cursor-pointer transition-colors ${
@@ -425,7 +431,24 @@ export default function ProfilePage() {
                 </div>
               ) : (
                 <div className="flex flex-wrap justify-center sm:justify-start gap-5 md:gap-7 mt-7">
-                  {likedCards}
+                  <AnimatePresence>
+                    {likedProducts.map((product) => (
+                      <motion.div
+                        key={product.id}
+                        layout
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <StickerCard
+                          product={product}
+                          liked={true}
+                          onToggleLike={() => handleToggleLike(product.id)}
+                        />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
                 </div>
               )}
             </motion.div>
