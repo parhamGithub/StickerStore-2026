@@ -33,9 +33,6 @@ function readUserInitials(): string | null {
 
 const navLinks = [
   { label: "Shop", href: "/" },
-  { label: "Packs", href: "#" },
-  { label: "Bundles", href: "#" },
-  { label: "About", href: "#" },
   { label: "Sign in", href: "/signin" },
 ];
 
@@ -69,13 +66,23 @@ export default function Header() {
 
   return (
     <>
-      <MobileSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} onOpen={() => setSidebarOpen(true)} />
+      <MobileSidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        onOpen={() => setSidebarOpen(true)}
+      />
       <header className="sticky top-0 z-50 bg-cream border-b border-foreground/20">
         <div className="mx-auto flex h-18.75 max-w-360 items-center px-4 md:px-8 lg:px-16">
           <div className="flex flex-1 justify-start">
             <Link href="/" className="flex items-center gap-2 no-underline">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <ellipse cx="8" cy="8" rx="7.9" ry="7.9" className="fill-coral" />
+                <ellipse
+                  cx="8"
+                  cy="8"
+                  rx="7.9"
+                  ry="7.9"
+                  className="fill-coral"
+                />
               </svg>
               <span
                 className="font-fredoka text-[22px] md:text-[26px] font-bold leading-none 
@@ -99,9 +106,26 @@ export default function Header() {
                   className="flex w-full max-w-sm items-center gap-2"
                 >
                   <div className="flex w-full items-center gap-2 rounded-xl border border-foreground/20 bg-white px-4 py-2">
-                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="shrink-0 text-foreground/40">
-                      <circle cx="8.5" cy="8.5" r="6" stroke="currentColor" strokeWidth="1.5" />
-                      <path d="M13 13l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      className="shrink-0 text-foreground/40"
+                    >
+                      <circle
+                        cx="8.5"
+                        cy="8.5"
+                        r="6"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                      />
+                      <path
+                        d="M13 13l5 5"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
                     </svg>
                     <input
                       ref={searchInputRef}
@@ -147,7 +171,12 @@ export default function Header() {
               aria-label="Open menu"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <path
+                  d="M3 6h18M3 12h18M3 18h18"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
               </svg>
             </button>
           </div>
@@ -174,7 +203,12 @@ export default function Header() {
                     viewBox="0 0 20 20"
                     fill="none"
                   >
-                    <path d="M5 5l10 10M15 5l-10 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    <path
+                      d="M5 5l10 10M15 5l-10 10"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
                   </motion.svg>
                 ) : (
                   <motion.svg
@@ -188,8 +222,19 @@ export default function Header() {
                     viewBox="0 0 20 20"
                     fill="none"
                   >
-                    <circle cx="8.5" cy="8.5" r="6" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M13 13l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    <circle
+                      cx="8.5"
+                      cy="8.5"
+                      r="6"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M13 13l5 5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
                   </motion.svg>
                 )}
               </AnimatePresence>
@@ -198,7 +243,7 @@ export default function Header() {
             {hydrated && userInitials ? (
               <Link
                 href="/profile"
-                className="hidden md:flex size-[34px] rounded-full bg-purple text-white font-bold text-[13px]
+                className="hidden md:flex size-8.5 rounded-full bg-purple text-white font-bold text-[13px]
                 items-center justify-center border-2 border-foreground shrink-0
                 no-underline"
               >
@@ -249,7 +294,6 @@ export default function Header() {
                 </span>
               )}
             </Link>
-
           </div>
         </div>
       </header>
