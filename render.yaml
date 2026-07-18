@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: sticker-store-backend
+    runtime: docker
+    repo: https://github.com/parhamGithub/StickerStore-2026
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    healthCheckPath: /api/products
+    plan: free
+    envVars:
+      - key: PORT
+        value: "10000"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: API_URL
+        value: https://sticker-store.vercel.app
