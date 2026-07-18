@@ -1,14 +1,8 @@
-FROM oven/bun:1 AS build
+FROM oven/bun:1.3
 WORKDIR /app
 COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
+RUN bun install
 COPY . .
-RUN bun run build
-
-FROM oven/bun:1 AS production
-WORKDIR /app
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/package.json ./
+RUN mkdir -p data
 EXPOSE 10000
-CMD ["bun", "dist/index.js"]
+CMD ["bun", "src/index.ts"]
