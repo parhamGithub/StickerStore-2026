@@ -2,18 +2,20 @@ import { Router } from "express";
 import { getDb } from "../db";
 const router = Router();
 router.get("/", (_req, res) => {
-    const { category } = _req.query;
+    const { category, q } = _req.query;
     const db = getDb();
+    let sql = "SELECT * FROM products WHERE 1=1";
+    const params = [];
     if (category && category !== "all") {
-        const products = db
-            .query("SELECT * FROM products WHERE category = ?1")
-            .all(category);
-        res.json(products);
+        sql += " AND category = ?";
+        params.push(category);
     }
-    else {
-        const products = db.query("SELECT * FROM products").all();
-        res.json(products);
+    if (q) {
+        sql += " AND (LOWER(name) LIKE ? OR LOWER(category) LIKE ?)";
+        params.push(`%${q.toLowerCase()}%`, `%${q.toLowerCase()}%`);
     }
+    const products = db.query(sql).all(...params);
+    res.json(products);
 });
 router.get("/:id", (req, res) => {
     const db = getDb();

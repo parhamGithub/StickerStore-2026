@@ -1,21 +1,18 @@
 import { Router } from "express";
 import { getDb } from "../db";
+import { authMiddleware } from "../middleware/auth";
 const router = Router();
-router.post("/", (req, res) => {
+router.post("/", authMiddleware, (req, res) => {
     const db = getDb();
-    const { items, total, customerName, customerEmail, customerAddress } = req.body;
-    if (!items?.length ||
-        total == null ||
-        !customerName ||
-        !customerEmail ||
-        !customerAddress) {
+    const { items, total, customerAddress } = req.body;
+    if (!items?.length || total == null) {
         res.status(400).json({ error: "Missing required fields" });
         return;
     }
     const result = db
-        .query(`INSERT INTO orders (items, total, customerName, customerEmail, customerAddress)
-       VALUES (?1, ?2, ?3, ?4, ?5)`)
-        .run(JSON.stringify(items), total, customerName, customerEmail, customerAddress);
+        .query(`INSERT INTO orders (items, total, customerName, customerEmail, customerAddress, user_id)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6)`)
+        .run(JSON.stringify(items), total, req.userName, req.userEmail, customerAddress || "", req.userId);
     res.status(201).json({
         id: Number(result.lastInsertRowid),
         message: "Order placed successfully",

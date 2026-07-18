@@ -137,17 +137,4 @@ function seedIfEmpty() {
 
     console.log("Database seeded with products and categories.")
   }
-
-  const existingUser = db
-    .query("SELECT id FROM users WHERE email = ?")
-    .get("test@stickerly.com") as { id: string } | undefined
-  if (!existingUser) {
-    const id = crypto.randomUUID()
-    const passwordHash = Bun.password.hashSync("password123")
-    db.run(
-      "INSERT INTO users (id, name, email, password) VALUES (?, ?, ?, ?)",
-      [id, "Test User", "test@stickerly.com", passwordHash],
-    )
-    console.log("Seeded test user: test@stickerly.com / password123")
-  }
 }

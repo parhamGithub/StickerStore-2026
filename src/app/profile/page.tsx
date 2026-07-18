@@ -10,6 +10,7 @@ import EditProfileSheet from "@/components/edit-profile-sheet";
 import { useGetProductsQuery } from "@/lib/features/products-api-slice";
 import StickerCard from "@/components/sticker-card";
 import { useToggleLikeMutation } from "@/lib/features/products-api-slice";
+import toast from "react-hot-toast";
 
 interface OrderItem {
   productId: string;
@@ -456,6 +457,31 @@ export default function ProfilePage() {
                 className="inline-flex items-center justify-center rounded-full border border-foreground/20 px-6 py-3 text-[14px] font-bold text-foreground cursor-pointer hover:bg-foreground/5 transition-colors"
               >
                 Sign out
+              </button>
+              <button
+                onClick={async () => {
+                  const confirmed = window.confirm(
+                    "Are you sure you want to delete your account? This will permanently remove all your orders, favorites, and personal data. This cannot be undone.",
+                  )
+                  if (!confirmed) return
+
+                  try {
+                    const token = localStorage.getItem("token")
+                    const res = await fetch("/api/profile", {
+                      method: "DELETE",
+                      headers: token ? { Authorization: `Bearer ${token}` } : {},
+                    })
+                    if (!res.ok) throw new Error()
+                    localStorage.removeItem("token")
+                    localStorage.removeItem("user")
+                    router.push("/")
+                  } catch {
+                    toast.error("Failed to delete account. Please try again.")
+                  }
+                }}
+                className="inline-flex items-center justify-center rounded-full border border-destructive/30 px-6 py-3 text-[14px] font-bold text-destructive cursor-pointer hover:bg-destructive/5 transition-colors"
+              >
+                Delete account
               </button>
             </motion.div>
           )}

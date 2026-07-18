@@ -1,4 +1,6 @@
 import { Router, Response } from "express"
+import path from "path"
+import fs from "fs"
 import { getDb } from "../db"
 import { authMiddleware, AuthRequest } from "../middleware/auth"
 import { updateProfileSchema } from "../validation"
@@ -93,6 +95,41 @@ router.put("/", (req: AuthRequest, res: Response) => {
     .get(req.userId!)
 
   res.json(user)
+})
+
+router.delete("/", (req: AuthRequest, res: Response) => {
+  const db = getDb()
+  const userId = req.userId!
+
+  const user = db
+    .query("SELECT avatar FROM users WHERE id = ?")
+    .get(userId) as { avatar: string | null } | undefined
+
+  if (!user) {
+    res.status(404).json({ error: "User not found" })
+    return
+  }
+
+  const deleteTx = db.transaction(() => {
+    db.run("DELETE FROM likes WHERE user_id = ?", [userId])
+    db.run("DELETE FROM orders WHERE user_id = ?", [userId])
+    db.run("DELETE FROM users WHERE id = ?", [userId])
+  })
+  deleteTx()
+
+  if (user.avatar) {
+    try {
+      const filepath = path.join(
+        path.dirname(new URL(import.meta.url).pathname),
+        "..",
+        "public",
+        user.avatar,
+      )
+      if (fs.existsSync(filepath)) fs.unlinkSync(filepath)
+    } catch {}
+  }
+
+  res.json({ message: "Account deleted" })
 })
 
 export default router
