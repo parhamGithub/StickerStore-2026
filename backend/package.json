@@ -5,7 +5,7 @@
     "dev": "bun --watch src/index.ts",
     "seed": "bun src/seed.ts",
     "build": "tsc",
-    "start": "bun src/index.ts"
+    "start": "bun dist/index.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

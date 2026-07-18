@@ -6,8 +6,9 @@
     "dev": "next dev",
     "backend": "bun run --cwd backend dev",
     "dev:all": "bun run --cwd backend dev & bun run dev",
-    "build": "next build",
+    "build": "next build && bun run --cwd backend build",
     "start": "next start",
+    "start:all": "bun run --cwd backend start & bun run start",
     "lint": "eslint"
   },
   "dependencies": {
