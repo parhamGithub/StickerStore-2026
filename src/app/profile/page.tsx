@@ -3,13 +3,13 @@
 import { useEffect, useState, useCallback, useRef, useLayoutEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import EditProfileSheet from "@/components/edit-profile-sheet";
 import { useGetProductsQuery } from "@/lib/features/products-api-slice";
-import { Heart } from "lucide-react";
+import StickerCard from "@/components/sticker-card";
+import { useToggleLikeMutation } from "@/lib/features/products-api-slice";
 
 interface OrderItem {
   productId: string;
@@ -67,11 +67,10 @@ function formatDate(iso: string) {
 }
 
 function statusInfo(
-  _items: string,
-  _createdAt: string,
+  createdAt: string,
 ): { label: string; className: string } {
   const days = Math.floor(
-    (Date.now() - new Date(_createdAt).getTime()) / 86400000,
+    (Date.now() - new Date(createdAt).getTime()) / 86400000,
   );
   if (days < 3) return { label: "Processing", className: "bg-yellow/20 text-[#a97a08]" };
   if (days < 10) return { label: "Shipped", className: "bg-purple/12 text-purple" };
@@ -158,6 +157,7 @@ export default function ProfilePage() {
   }, [activeTab]);
 
   const { data: allProducts } = useGetProductsQuery();
+  const [toggleLike] = useToggleLikeMutation();
 
   if (loading) {
     return (
@@ -208,39 +208,12 @@ export default function ProfilePage() {
   const likedProducts = allProducts?.filter((p) => likedProductIds.includes(p.id)) ?? [];
 
   const likedCards = likedProducts.map((product) => (
-    <div
+    <StickerCard
       key={product.id}
-      className="flex w-full sm:w-72.5 shrink-0 flex-col gap-3.5 rounded-2xl border border-foreground/20 bg-card p-5 shadow-card"
-    >
-      <div
-        className="relative flex h-50.5 items-center justify-center rounded-xl"
-        style={{ backgroundColor: product.bgColor }}
-      >
-        <Image
-          src={product.image}
-          alt={product.name}
-          width={240}
-          height={200}
-          className="h-full w-full object-contain p-3"
-        />
-        <div className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/70 backdrop-blur-sm">
-          <Heart className="h-4.5 w-4.5" fill="#ef4444" stroke="#ef4444" strokeWidth={2} />
-        </div>
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-0.75">
-          <span className="font-fredoka text-[16px] font-semibold text-foreground">
-            {product.name}
-          </span>
-          <span className="font-nunito text-[12.5px] text-foreground/60">
-            {product.material} · {product.size}
-          </span>
-        </div>
-        <span className="font-nunito text-[16px] font-bold text-foreground">
-          ${product.price.toFixed(2)}
-        </span>
-      </div>
-    </div>
+      product={product}
+      liked={true}
+      onToggleLike={() => toggleLike(product.id)}
+    />
   ));
 
   const tabClass = (tab: string) =>
@@ -383,10 +356,7 @@ export default function ProfilePage() {
                       ? orderItems[0].name
                       : `${orderItems[0].name} + ${orderItems.length - 1} more`;
                   const totalQty = orderItems.reduce((s, oi) => s + oi.quantity, 0);
-                  const status = statusInfo(
-                    JSON.stringify(order.items),
-                    order.createdAt,
-                  );
+                  const status = statusInfo(order.createdAt);
 
                   return (
                     <div
@@ -461,16 +431,33 @@ export default function ProfilePage() {
           )}
 
           {activeTab === "account" && (
-            <motion.p
+            <motion.div
               key="account"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              className="font-nunito text-[15px] text-text-secondary py-16 text-center"
+              className="flex flex-col items-center gap-6 py-16"
             >
-              Account details coming soon.
-            </motion.p>
+              <div className="text-center">
+                <p className="font-fredoka font-semibold text-[18px] text-foreground">
+                  {user.name}
+                </p>
+                <p className="font-nunito text-[14px] text-text-secondary mt-1">
+                  {user.email}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  localStorage.removeItem("token")
+                  localStorage.removeItem("user")
+                  router.push("/")
+                }}
+                className="inline-flex items-center justify-center rounded-full border border-foreground/20 px-6 py-3 text-[14px] font-bold text-foreground cursor-pointer hover:bg-foreground/5 transition-colors"
+              >
+                Sign out
+              </button>
+            </motion.div>
           )}
         </AnimatePresence>
       </main>

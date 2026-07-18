@@ -104,9 +104,7 @@ export default function Hero() {
               height={200}
               className={`absolute ${sticker.className}`}
               style={{ transform: `rotate(${sticker.rotate})` }}
-              {...(sticker.src === "/images/Hero/Sticker-Heart.svg"
-                ? { priority: true }
-                : {})}
+              priority={sticker.src === "/images/Hero/Sticker-Heart.svg"}
             />
           ))}
 
